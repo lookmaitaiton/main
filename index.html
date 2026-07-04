@@ -142,8 +142,8 @@
 
         let splashRemoved = false;
 
-        // 1. ฟังก์ชันสั่งปิดหน้าโหลดอย่างเดียว (ไม่เปิดปุ่ม)
-        function showApp() {
+        // ฟังก์ชันสั่งปิดหน้าโหลดและโชว์ปุ่มสลับลิงก์
+        function showAppAndButton() {
             if (splashRemoved) return;
             splashRemoved = true;
             
@@ -152,10 +152,7 @@
                 splash.classList.add('fade-out');
                 setTimeout(() => { if (splash.parentNode) splash.remove(); }, 800);
             }
-        }
-
-        // 2. ฟังก์ชันสำหรับเปิดโชว์ปุ่มกู้ชีพอย่างเดียว
-        function showEmergencyButton() {
+            
             const emergencyBtn = document.getElementById('emergency-backup-btn');
             if (emergencyBtn) emergencyBtn.style.display = 'block';
         }
@@ -166,12 +163,13 @@
             location.reload(); 
         }
 
-        // รับสัญญาณ PING จากหน้าเว็บด้านใน
+       // รับสัญญาณ PING จากหน้าเว็บด้านใน (เช็คความปลอดภัยก่อนสั่งโชว์เว็บ)
         window.addEventListener('message', (event) => {
+            // ปรับเป็น 'script.google' เพื่อให้รองรับทั้ง .com และ .googleusercontent.com ของแท้จาก Google
             if (!event.origin.includes('script.google')) return;
             
             if (event.data === 'LOOKMAI_APP_READY') {
-                showApp(); // โหลดเสร็จสมบูรณ์ ปิดแค่หน้าโหลด ไม่โชว์ปุ่ม
+                showAppAndButton();
             }
         });
 
@@ -179,8 +177,9 @@
         window.addEventListener('DOMContentLoaded', () => {
             const iframe = document.getElementById('main-iframe');
             
+            // ⭐️ เมื่อหน้าเว็บด้านในโหลดเสร็จ ให้สั่งปิดหน้าโหลด (Splash screen) ทันที
             iframe.onload = () => {
-                showApp(); // โหลดเสร็จสมบูรณ์ ปิดแค่หน้าโหลด ไม่โชว์ปุ่ม
+                showAppAndButton(); 
             };
 
             // หน่วงเวลา 8 วินาที: ถ้าระบบช้าหรือล่ม ก็ให้ปิดหน้าโหลดโชว์ปุ่มสลับลิงก์ให้กดเสมอ
